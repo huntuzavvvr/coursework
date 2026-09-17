@@ -1,3 +1,0 @@
-; A delayed event is instantiated only when forced; its key preserves correlation.
-(let [weather (delay (choose "weather" [[3 "sun"] [1 "rain"]]))]
-  [(force weather) (force weather)])

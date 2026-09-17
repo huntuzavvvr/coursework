@@ -1,8 +1,0 @@
-; A laboratory alarm is more likely under a fault than under normal conditions.
-; Prior P(fault) = 1/10. P(alarm|fault)=9/10, P(alarm|normal)=1/10.
-; Given an alarm, P(fault|alarm)=1/2, and evidence P(alarm)=9/50.
-(let [fault (choose "fault" [[1 true] [9 false]])
-      alarm (if fault
-              (choose "fault-alarm" [[9 true] [1 false]])
-              (choose "normal-alarm" [[1 true] [9 false]]))]
-  (observe alarm fault))

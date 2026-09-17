@@ -31,12 +31,6 @@ module Value =
 type Decision = { Domain: (Rational * Data) list; Selected: Data }
 type World = { Weight: Rational; Choices: Map<string, Decision>; Outputs: Map<string, string> }
 type Context = { Inputs: Map<string, string> }
-type Limits = { MaxSteps: int; MaxWorlds: int }
-
-module Limits =
-    let standard = { MaxSteps = 2000000; MaxWorlds = 10000 }
-
 type Outcome = { Value: Data; Probability: Rational }
 type Witness = { Value: Data; PriorWeight: Rational; Choices: Map<string, Decision>; Outputs: Map<string, string> }
-type Report = { Outcomes: Outcome list; Evidence: Rational; Witnesses: Witness list; Steps: int; WorldsCreated: int }
-
+type Report = { Outcomes: Outcome list; Evidence: Rational; Witnesses: Witness list }

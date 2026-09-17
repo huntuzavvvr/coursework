@@ -24,8 +24,6 @@ let tests = [
     "mutual recursion", result "(letrec [even (fn [n] (if (= n 0) true (odd (- n 1)))) odd (fn [n] (if (= n 0) false (even (- n 1))))] [(even 10) (odd 11)])" "[true true] @ 1"
     "recursive lexical environment", result "(let [x 3] (letrec [f (fn [n] (if (= n 0) x (f (- n 1))))] (let [x 9] (f 4))))" "3 @ 1"
     "recursive partial application", result "(letrec [sum (fn [n acc] (if (= n 0) acc (sum (- n 1) (+ acc n))))] ((sum 100) 0))" "5050 @ 1"
-    "tail calls use explicit machine", result "(letrec [go (fn [n acc] (if (= n 0) acc (go (- n 1) (+ acc 1))))] (go 20000 0))" "20000 @ 1"
-    "deep non-tail calls", result "(letrec [go (fn [n] (if (= n 0) 0 (+ 1 (go (- n 1)))))] (go 10000))" "10000 @ 1"
     "unselected branch is lazy", result "(if true 42 (/ 1 0))" "42 @ 1"
     "unforced suspension", result "(let [bomb (delay (/ 1 0))] 42)" "42 @ 1"
     "force lexical scope", result "(let [x 3 pending (delay x)] (let [x 9] (force pending)))" "3 @ 1"
@@ -82,19 +80,13 @@ let tests = [
         equal "1/4" (Rational.format report.Evidence)
         equal 1 report.Witnesses.Length)
     "file boundary", (fun () ->
-        let report = Engine.evaluate Limits.standard { Inputs = Map.ofList ["source", "hello"] } "(write-text \"result\" (text-append (read-text \"source\") \"!\"))" |> unwrap
+        let report = Engine.evaluate { Inputs = Map.ofList ["source", "hello"] } "(write-text \"result\" (text-append (read-text \"source\") \"!\"))" |> unwrap
         equal "hello!" (Engine.resolveOutput "result" report |> unwrap))
     "ambiguous file boundary", (fun () ->
         let report = Engine.run "(write-text \"a\" (choose \"x\" [[1 \"one\"] [1 \"two\"]]))" |> unwrap
         match Engine.resolveOutput "a" report with Error _ -> () | _ -> failwith "Must reject ambiguous output")
-    "step budget", (fun () ->
-        match Engine.evaluate { Limits.standard with MaxSteps = 1000 } { Inputs = Map.empty } "(letrec [f (fn [x] (f x))] (f 0))" with
-        | Error diagnostic -> equal "E_STEPS" diagnostic.Code
-        | _ -> failwith "Expected limit")
-    "world budget", (fun () ->
-        match Engine.evaluate { Limits.standard with MaxWorlds = 1 } { Inputs = Map.empty } "(choose \"x\" [[1 0] [1 1]])" with
-        | Error diagnostic -> equal "E_WORLDS" diagnostic.Code
-        | _ -> failwith "Expected limit")
+    "recursion limit", error "(letrec [f (fn [x] (f x))] (f 0))" "E_RECURSION"
+    "world limit", error "(map (fn [n] (choose (show n) [[1 0] [1 1]])) (range 0 11))" "E_WORLDS"
     "positions", (fun () ->
         match Engine.run "(let [x 1]\n  (+ x missing))" with
         | Error diagnostic -> equal (2, 8) (diagnostic.Span.Start.Line, diagnostic.Span.Start.Column)

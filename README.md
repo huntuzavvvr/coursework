@@ -1,22 +1,44 @@
-# Coursework · Mosaic
+# Mosaic — функциональный язык программирования
 
-Курсовой проект: **Mosaic**, функциональный язык конечных возможных миров.
-Реализация на F#, точные вероятности, коррелированные события, наблюдения,
-ленивые потоки и объяснения результатов.
+Индивидуальный курсовой проект на F#. Реализован небольшой интерпретатор
+с функциями, замыканиями, рекурсией, списками и ленивыми вычислениями.
+Особенность языка — связанные вероятностные выборы: повторное обращение
+к одному событию сохраняет выбранное значение.
 
-Весь самостоятельный проект находится в [mosaic/](mosaic/README.md).
+## Содержание
+
+- [Проект и руководство по запуску](mosaic/README.md)
+- [Синтаксис](mosaic/docs/syntax.md)
+- [Стандартная библиотека](mosaic/docs/api.md)
+- [Примеры программ](mosaic/docs/examples.md)
+- [Архитектура](mosaic/docs/architecture.md)
+- [Статус и требования](mosaic/PROJECT_STATUS.md)
+- [Использование ИИ](mosaic/AI_USAGE.md)
+
+## Пример
+
+```lisp
+(letrec [fact (fn [n]
+               (if (= n 0) 1 (* n (fact (- n 1)))))]
+  (fact 6))
+```
+
+Результат: `720 @ 1`.
+
+## Запуск
+
+Нужен .NET SDK 10. Из корня репозитория:
 
 ```sh
 cd mosaic
-./mosaic run examples/detective.mos --explain
+./mosaic examples/factorial.mos
+./mosaic examples/shared-weather.mos --explain
 ./scripts/verify.sh
 ```
 
-Нужны .NET SDK 10 и Python 3 для сквозных тестов. Подробности установки,
-языка и устройства интерпретатора — в README проекта.
+Полная документация находится в папке [mosaic/](mosaic/README.md).
 
-- [Требования и их покрытие](mosaic/docs/requirements.md)
-- [Руководство языка](mosaic/docs/language.md)
-- [Семантика и архитектура](mosaic/docs/semantics.md)
-- [Подготовка к защите](mosaic/docs/defense.md)
-- [Использование ИИ](mosaic/AI_USAGE.md)
+## Автор
+
+[@huntuzavvvr](https://github.com/huntuzavvvr), индивидуальная работа.
+Использование OpenAI Codex описано в [журнале](mosaic/AI_USAGE.md).

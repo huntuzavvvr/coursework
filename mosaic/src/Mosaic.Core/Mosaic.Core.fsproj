@@ -4,7 +4,7 @@
     <Compile Include="Reader.fs" />
     <Compile Include="Values.fs" />
     <Compile Include="Primitives.fs" />
-    <Compile Include="Machine.fs" />
+    <Compile Include="Interpreter.fs" />
     <Compile Include="Prelude.fs" />
     <Compile Include="Engine.fs" />
   </ItemGroup>
