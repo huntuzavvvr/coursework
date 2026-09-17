@@ -73,7 +73,7 @@ module Reader =
         | Some ')' | Some ']' -> fail "E_DELIMITER" $"Expected '{closing}'" (at current)
         | _ -> let item, rest = read depth current in group depth closing (item :: reversed) rest
 
-    let private reserved = Set.ofList ["let"; "letrec"; "fn"; "if"; "delay"; "force"; "observe"; "true"; "false"]
+    let private reserved = Set.ofList ["let"; "letrec"; "fn"; "if"; "delay"; "force"; "pipe"; "true"; "false"]
     let private numeric (text: string) =
         match BigInteger.TryParse(text, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture) with
         | true, n -> Some n
@@ -100,7 +100,7 @@ module Reader =
             | Atom "false" -> Literal (Data.Boolean false)
             | Atom text ->
                 match numeric text with
-                | Some n -> Literal (Number (Rational.integer n))
+                | Some n -> Literal (Number n)
                 | None -> Variable text
             | Square forms -> ListExpr (List.map lower forms)
             | Round ({ Shape = Atom "fn" } :: [args; body]) -> Lambda (parameters args, lower body)
@@ -114,7 +114,7 @@ module Reader =
                 Recursive (functions, lower body)
             | Round ({ Shape = Atom "delay" } :: [body]) -> Delay (lower body)
             | Round ({ Shape = Atom "force" } :: [body]) -> Force (lower body)
-            | Round ({ Shape = Atom "observe" } :: [condition; body]) -> Observe (lower condition, lower body)
+            | Round ({ Shape = Atom "pipe" } :: initial :: stages) -> Pipeline (lower initial, List.map lower stages)
             | Round ({ Shape = Atom keyword } :: _) when Set.contains keyword reserved ->
                 fail "E_FORM" $"Invalid '{keyword}' form" form.Span
             | Round (callee :: (_ :: _ as arguments)) -> Apply (lower callee, List.map lower arguments)

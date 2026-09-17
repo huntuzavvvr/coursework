@@ -14,39 +14,42 @@ def invoke(*args, code=0):
     return result
 
 
-def example(name, expected, evidence="1"):
-    lines = invoke(f"examples/{name}.mos").stdout.strip().splitlines()
-    assert set(lines[:-1]) == set(expected), (name, lines)
-    assert lines[-1].startswith(f"evidence = {evidence};"), (name, lines)
+def example(name, expected):
+    actual = invoke(f"examples/{name}.mos").stdout.strip()
+    assert actual == expected, (name, actual)
 
 
 def main():
-    example("factorial", ["2432902008176640000 @ 1"])
-    example("closures", ["[32 50 68 212] @ 1"])
-    example("lists", ["[[4 16 36 64 100] 220 [9 4 1]] @ 1"])
-    example("streams", ["[0 1 1 2 3 5 8 13 21 34 55 89] @ 1"])
-    example("shared-weather", ['["sun" "sun"] @ 3/4', '["rain" "rain"] @ 1/4'])
-    example("dice", [f"[{n} {7-n}] @ 1/6" for n in range(1, 7)], "1/6")
+    example("factorial", "2432902008176640000")
+    example("closures", "[3 5 13]")
+    example("lists", "[[4 16 36 64 100] 220 [9 4 1]]")
+    example("streams", "[0 1 1 2 3 5 8 13 21 34 55 89]")
+    example("pipeline", "220")
+    example("grades", "[[5 4 5 5] 4]")
     with tempfile.TemporaryDirectory(prefix="mosaic-test-") as directory:
         target = Path(directory) / "report.txt"
         program = Path(directory) / "test.mos"
         invoke("examples/files.mos", "--input", "message", "examples/message.txt", "--output", "report", str(target))
         assert target.read_text() == (ROOT / "examples/message.txt").read_text() + "\nProcessed by Mosaic.\n"
         target.write_text("original")
-        for source in [
-            '(write-text "report" (choose "coin" [[1 "a"] [1 "b"]]))',
-            '(if (choose "coin" [[1 true] [1 false]]) (write-text "report" "a") "b")',
+        for source, diagnostic in [
+            ('[(write-text "report" "a") (write-text "report" "b")]', "E_OUTPUT"),
+            ('42', "E_EXPORT"),
+            ('(let [saved (write-text "report" "a")] (/ 1 0))', "E_ZERO"),
         ]:
             program.write_text(source)
-            assert "E_EXPORT" in invoke(str(program), "--output", "report", str(target), code=1).stderr
+            assert diagnostic in invoke(str(program), "--output", "report", str(target), code=1).stderr
             assert target.read_text() == "original"
+        program.write_text('(write-text "report" "new")')
+        assert "E_EXPORT" in invoke(str(program), "--output", "report", str(target),
+                                    "--output", "missing", str(Path(directory) / "other.txt"), code=1).stderr
+        assert target.read_text() == "original"
         program.write_text("(let [x 1]\n  (+ x missing))")
         assert ":2:8: E_NAME" in invoke(str(program), code=1).stderr
         program.write_text("(letrec [go (fn [n] (go n))] (go 0))")
         assert "E_RECURSION" in invoke(str(program), code=1).stderr
         invoke(str(Path(directory) / "missing.mos"), code=1)
         invoke("examples/factorial.mos", "--output", "a", str(target), "--output", "b", str(target), code=2)
-    assert 'weather="sun"' in invoke("examples/shared-weather.mos", "--explain").stdout
     invoke("examples/factorial.mos", "--unknown", code=2)
     invoke("examples/factorial.mos", "--input", "a", code=2)
     invoke("examples/factorial.mos", "--input", "a", "x", "--input", "a", "y", code=2)

@@ -25,12 +25,8 @@ module Value =
                 | Ok reversed, Ok data -> Ok (data :: reversed)
                 | Error message, _ | _, Error message -> Error message
             List.fold folder (Ok []) items |> Result.map (List.rev >> Sequence)
-        | Closure _ | RecursiveClosure _ | Primitive _ -> Error "A function cannot be observed as data"
-        | Suspended _ -> Error "A delayed expression must be forced before observing it as data"
+        | Closure _ | RecursiveClosure _ | Primitive _ -> Error "A function cannot be printed as data"
+        | Suspended _ -> Error "A delayed expression must be forced before printing it as data"
 
-type Decision = { Domain: (Rational * Data) list; Selected: Data }
-type World = { Weight: Rational; Choices: Map<string, Decision>; Outputs: Map<string, string> }
 type Context = { Inputs: Map<string, string> }
-type Outcome = { Value: Data; Probability: Rational }
-type Witness = { Value: Data; PriorWeight: Rational; Choices: Map<string, Decision>; Outputs: Map<string, string> }
-type Report = { Outcomes: Outcome list; Evidence: Rational; Witnesses: Witness list }
+type Report = { Value: Data; Outputs: Map<string, string> }

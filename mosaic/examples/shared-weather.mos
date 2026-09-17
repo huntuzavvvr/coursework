@@ -1,3 +1,0 @@
-; Calling the same named event twice does not redraw the weather.
-(let [weather (fn [ignored] (choose "weather" [[3 "sun"] [1 "rain"]]))]
-  [(weather 0) (weather 0)])

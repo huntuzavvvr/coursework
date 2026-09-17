@@ -1,0 +1,5 @@
+; Sum the squares of even numbers from 1 to 10.
+(pipe (range 1 11)
+  (filter (fn [x] (= (mod x 2) 0)))
+  (map (fn [x] (* x x)))
+  sum)

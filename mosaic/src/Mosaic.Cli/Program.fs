@@ -4,20 +4,18 @@ open System
 open System.IO
 open Mosaic
 
-type Options = { Explain: bool; Inputs: (string * string) list; Outputs: (string * string) list }
-let defaults = { Explain = false; Inputs = []; Outputs = [] }
-let usage = """Mosaic — functional language with named choices
+type Options = { Inputs: (string * string) list; Outputs: (string * string) list }
+let defaults = { Inputs = []; Outputs = [] }
+let usage = """Mosaic — functional language for lists and pipelines
 
-Usage: mosaic FILE [--explain] [--input NAME PATH] [--output NAME PATH]
+Usage: mosaic FILE [--input NAME PATH] [--output NAME PATH]
 
-  --explain          show the choices in each surviving world
   --input NAME PATH  supply a UTF-8 file as a named input
-  --output NAME PATH export a named output if all worlds agree
+  --output NAME PATH export a named text output
 """
 
 let rec options current = function
     | [] -> Ok current
-    | "--explain" :: rest -> options { current with Explain = true } rest
     | "--input" :: name :: path :: rest ->
         if List.exists (fun (alias, _) -> alias = name) current.Inputs then Error $"Duplicate input '{name}'"
         else options { current with Inputs = current.Inputs @ [name, path] } rest
@@ -41,11 +39,6 @@ let execute path settings =
         | Ok files ->
             files |> List.rev |> List.iter (fun (target, contents) -> File.WriteAllText(target, contents, Text.UTF8Encoding(false)))
             printfn "%s" (Engine.summary report)
-            printfn "evidence = %s; worlds = %d" (Rational.format report.Evidence) report.Witnesses.Length
-            if settings.Explain then
-                report.Witnesses |> List.iter (fun witness ->
-                    let choices = witness.Choices |> Map.toList |> List.map (fun (name, decision) -> $"{name}={Data.format decision.Selected}") |> String.concat ", "
-                    printfn "  %s -> %s" choices (Data.format witness.Value))
             0
 
 [<EntryPoint>]

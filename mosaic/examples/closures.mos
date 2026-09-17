@@ -1,3 +1,4 @@
+; A function remembers the parameters of the call that created it.
 (let [make-affine (fn [scale offset] (fn [x] (+ (* scale x) offset)))
-      fahrenheit (make-affine (/ 9 5) 32)]
-  (map fahrenheit [0 10 20 100]))
+      transform (make-affine 2 3)]
+  (map transform [0 1 5]))
