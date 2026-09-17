@@ -1,0 +1,7 @@
+; Find the distribution of route costs after rejecting plans outside the budget.
+(let [weather (choose "weather" [[3 "clear"] [1 "storm"]])
+      route (choose "route" [[1 "ridge"] [1 "valley"]])
+      cost (if (= route "ridge")
+             (if (= weather "clear") 4 12)
+             (if (= weather "clear") 6 8))]
+  (observe (<= cost 8) [route cost]))

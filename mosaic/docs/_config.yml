@@ -1,0 +1,14 @@
+title: Mosaic
+description: Функциональный язык точных возможных миров
+theme: jekyll-theme-minimal
+baseurl: /coursework
+url: https://huntuzavvvr.github.io
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

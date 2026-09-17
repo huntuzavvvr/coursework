@@ -1,0 +1,5 @@
+; Two independent dice, conditioned on a sum of seven.
+(let [die (fn [name] (choose name (map (fn [n] [1 n]) (range 1 7))))
+      left (die "left")
+      right (die "right")]
+  (observe (= (+ left right) 7) [left right]))

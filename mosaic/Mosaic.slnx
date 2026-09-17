@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/Mosaic.Core/Mosaic.Core.fsproj" />
+  <Project Path="src/Mosaic.Cli/Mosaic.Cli.fsproj" />
+  <Project Path="tests/Mosaic.Tests/Mosaic.Tests.fsproj" />
+</Solution>

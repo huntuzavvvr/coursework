@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Mosaic.Core/Mosaic.Core.fsproj" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+</Project>

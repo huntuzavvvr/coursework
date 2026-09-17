@@ -1,0 +1,12 @@
+; Exhaustive four-queens constraint solving. Each row owns one named choice.
+(let [columns [[1 0] [1 1] [1 2] [1 3]]
+      a (choose "row-0" columns)
+      b (choose "row-1" columns)
+      c (choose "row-2" columns)
+      d (choose "row-3" columns)
+      safe (fn [x y distance]
+             (if (= x y) false
+               (if (= (- x y) distance) false (not (= (- y x) distance)))))]
+  (observe (all identity [(safe a b 1) (safe a c 2) (safe a d 3)
+                         (safe b c 1) (safe b d 2) (safe c d 1)])
+    [a b c d]))

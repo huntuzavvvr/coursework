@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+mosaic_root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+"$mosaic_root/scripts/dotnet.sh" build "$mosaic_root/src/Mosaic.Cli/Mosaic.Cli.fsproj" --configuration Release --nologo --verbosity quiet -m:1 -nodeReuse:false >&2
+exec "$mosaic_root/scripts/dotnet.sh" "$mosaic_root/src/Mosaic.Cli/bin/Release/net10.0/Mosaic.Cli.dll" "$@"

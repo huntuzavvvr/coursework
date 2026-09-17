@@ -1,0 +1,3 @@
+(let [make-affine (fn [scale offset] (fn [x] (+ (* scale x) offset)))
+      fahrenheit (make-affine (/ 9 5) 32)]
+  (map fahrenheit [0 10 20 100]))
