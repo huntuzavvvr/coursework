@@ -1,0 +1,6 @@
+; Keep passing grades, give one bonus point and calculate the average.
+(let [grades [2 5 3 4 2 5]
+      adjusted (pipe grades
+                 (filter (fn [grade] (>= grade 3)))
+                 (map (fn [grade] (if (< grade 5) (+ grade 1) grade))))]
+  [adjusted (/ (sum adjusted) (length adjusted))])

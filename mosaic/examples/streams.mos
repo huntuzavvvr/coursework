@@ -1,0 +1,3 @@
+; Corecursive Fibonacci stream: its infinite tail is never built eagerly.
+(letrec [fibs (fn [a b] [a (delay (fibs b (+ a b)))])]
+  (stream-take 12 (fibs 0 1)))

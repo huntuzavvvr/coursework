@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="core/Syntax.fs" />
+    <Compile Include="core/Reader.fs" />
+    <Compile Include="core/Values.fs" />
+    <Compile Include="core/Primitives.fs" />
+    <Compile Include="core/Interpreter.fs" />
+    <Compile Include="core/Prelude.fs" />
+    <Compile Include="core/Engine.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+</Project>

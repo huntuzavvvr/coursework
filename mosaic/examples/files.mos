@@ -1,0 +1,2 @@
+; Input and output names are logical aliases. The CLI supplies actual paths.
+(write-text "report" (text-append (read-text "message") "\nProcessed by Mosaic.\n"))
